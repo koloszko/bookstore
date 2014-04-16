@@ -1,0 +1,7 @@
+parameters:
+#    bookstore_demo.example.class: Bookstore\DemoBundle\Example
+
+services:
+#    bookstore_demo.example:
+#        class: %bookstore_demo.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
