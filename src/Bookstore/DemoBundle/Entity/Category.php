@@ -36,4 +36,60 @@ class Category
     private $parent;
 
 
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Category
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \Bookstore\DemoBundle\Entity\Category $parent
+     * @return Category
+     */
+    public function setParent(\Bookstore\DemoBundle\Entity\Category $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \Bookstore\DemoBundle\Entity\Category 
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
 }
