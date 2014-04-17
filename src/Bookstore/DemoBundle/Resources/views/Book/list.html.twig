@@ -1,0 +1,56 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <table class="reference" style="width:60%">
+        <thead>
+            <tr>
+                <th>Tytuł</th>
+                <th>Autor</th>		
+                <th>Cena</th>
+            </tr>
+        </thead>        
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>		
+                    <td>{{book.price|number_format}}</td>
+                </tr>
+            {% else %}  
+                <tr>
+                    <td colspan="3">Nie znaleziono rekordów</td>
+                </tr>
+            {% endfor %}            
+        </tbody>
+    </table>
+    
+    {% if showPaginator %}
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ path("bookstore_demo_book_list") }}"><<<</a>
+                
+                {% set prev = page - 1 %}
+                {% if prev == 1 %}
+                    <a href="{{ path("bookstore_demo_book_list") }}"><</a>
+                {% else %}
+                    <a href="{{ path("bookstore_demo_book_list", {'page' : prev}) }}"><</a>
+                {% endif %}
+            {% endif %}
+            {% for pageTmp in max(1, page - pagesStepsAvailable)..min(pagesAmount, page + pagesStepsAvailable) %}
+                {% if pageTmp == page %}
+                    {{ page }}
+                {% else %}
+                    {% if pageTmp == 1 %}
+                        <a href="{{ path("bookstore_demo_book_list") }}">{{ pageTmp }}</a>
+                    {% else %}
+                        <a href="{{ path("bookstore_demo_book_list", {'page' : pageTmp}) }}">{{ pageTmp }}</a>
+                    {% endif %}
+               {% endif %}
+            {% endfor %}
+            {% if pagesAmount > page %}
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : page + 1}) }}">></a>
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : pagesAmount}) }}">>>></a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

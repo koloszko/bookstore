@@ -1,4 +1,4 @@
 bookstore_demo:
-    resource: "@BookstoreDemoBundle/Resources/config/routing.yml"
-    prefix:   /
+    resource: "@BookstoreDemoBundle/Controller"
+    type:     annotation
 
