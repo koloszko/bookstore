@@ -1,0 +1,10 @@
+Bookstore\DemoBundle\Entity\Book:
+    properties:
+        title:
+            - NotBlank: ~
+        author:
+            - NotBlank: ~    
+        price:
+            - NotBlank: ~        
+            - Type:
+                type: double

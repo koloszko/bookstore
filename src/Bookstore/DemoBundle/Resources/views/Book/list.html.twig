@@ -1,12 +1,14 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
+    <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div>
     <table class="reference" style="width:60%">
         <thead>
             <tr>
                 <th>Tytuł</th>
                 <th>Autor</th>		
                 <th>Cena</th>
+                <th></th>
             </tr>
         </thead>        
         <tbody>
@@ -15,10 +17,11 @@
                     <td>{{book.title}}</td>
                     <td>{{book.author}}</td>		
                     <td>{{book.price|number_format}}</td>
+                    <td><a href="{{ path("bookstore_demo_book_edit", {'id' : book.id}) }}">Edytuj</a></td>
                 </tr>
             {% else %}  
                 <tr>
-                    <td colspan="3">Nie znaleziono rekordów</td>
+                    <td colspan="4">Nie znaleziono rekordów</td>
                 </tr>
             {% endfor %}            
         </tbody>

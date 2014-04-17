@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>            
+            <trans-unit id="22">
+                <source>This value should not be blank.</source>
+                <target>To pole jest wymagane</target>
+            </trans-unit>           
+            <trans-unit id="36">
+                <source>This file is not a valid image.</source>
+                <target>Ten plik nie jest dozwolonym plikiem graficznym</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
