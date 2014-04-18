@@ -6,11 +6,21 @@
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/base.css') }}">
         {% endblock %}
+        {% block javascripts %}
+            <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+        {% endblock %}            
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        <div class="header">Księgarnia</div>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="header"><h1>Księgarnia</h1></div>
+        <div class="left">
+            {% block left %}{% endblock %}
+        </div>
+        <div class="right">
+            {% block body %}{% endblock %}
+        </div>
+        {% block bottom_javascripts %}{% endblock %}
     </body>
 </html>

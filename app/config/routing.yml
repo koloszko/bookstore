@@ -1,4 +1,7 @@
 bookstore_demo:
-    resource: "@BookstoreDemoBundle/Controller"
+    resource: "@BookstoreDemoBundle/Controller/"
     type:     annotation
+    
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"    
 

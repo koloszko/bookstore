@@ -1,7 +1,20 @@
 {% extends '::base.html.twig' %}
 
+{% block left %}
+<div class="categories">
+    <p>Kategorie</p>
+    <ul>
+        {% for category in categories %}
+            <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }}>{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock left %}
+
 {% block body %}
-    <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div>
+    <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div> 
+    
+    {{ form(searchForm) }}
     <table class="reference" style="width:60%">
         <thead>
             <tr>
@@ -30,13 +43,13 @@
     {% if showPaginator %}
         <div class="pagination">
             {% if page > 1 %}
-                <a href="{{ path("bookstore_demo_book_list") }}"><<<</a>
+                <a href="{{ path("bookstore_demo_book_list", criteria) }}"><<<</a>
                 
                 {% set prev = page - 1 %}
                 {% if prev == 1 %}
-                    <a href="{{ path("bookstore_demo_book_list") }}"><</a>
+                    <a href="{{ path("bookstore_demo_book_list", criteria) }}"><</a>
                 {% else %}
-                    <a href="{{ path("bookstore_demo_book_list", {'page' : prev}) }}"><</a>
+                    <a href="{{ path("bookstore_demo_book_list", {'page' : prev}|merge(criteria)) }}"><</a>
                 {% endif %}
             {% endif %}
             {% for pageTmp in max(1, page - pagesStepsAvailable)..min(pagesAmount, page + pagesStepsAvailable) %}
@@ -44,16 +57,50 @@
                     {{ page }}
                 {% else %}
                     {% if pageTmp == 1 %}
-                        <a href="{{ path("bookstore_demo_book_list") }}">{{ pageTmp }}</a>
+                        <a href="{{ path("bookstore_demo_book_list", criteria) }}">{{ pageTmp }}</a>
                     {% else %}
-                        <a href="{{ path("bookstore_demo_book_list", {'page' : pageTmp}) }}">{{ pageTmp }}</a>
+                        <a href="{{ path("bookstore_demo_book_list", {'page' : pageTmp}|merge(criteria)) }}">{{ pageTmp }}</a>
                     {% endif %}
                {% endif %}
             {% endfor %}
             {% if pagesAmount > page %}
-                <a href="{{ path("bookstore_demo_book_list", { 'page' : page + 1}) }}">></a>
-                <a href="{{ path("bookstore_demo_book_list", { 'page' : pagesAmount}) }}">>>></a>
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : page + 1}|merge(criteria)) }}">></a>
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : pagesAmount}|merge(criteria)) }}">>>></a>
             {% endif %}
         </div>
     {% endif %}
+{% endblock %}
+
+{% block bottom_javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        $(function() {
+            $('.categories').on('click', '.cat a', function(event) {
+                event.preventDefault();
+                var self = $(this),
+                    liElem = self.parent('li');
+                if (liElem.hasClass('unfold')) {
+                    liElem.removeClass('unfold');
+                    liElem.find('ul').remove();
+                } else {
+                    liElem.addClass('unfold');
+                    $.get(self.attr('href'), function( data ) {
+                        var lnth = data.length;
+                        if (lnth) {
+                            var dom = '<ul>';
+                            for (var i=0; i < lnth; i++) {
+                               dom = dom + "<li class='cat'><a href='" + Routing.generate('bookstore_demo_categories', {parentId: data[i].id }) + "'>" + data[i].name + "</a></li>"
+                            }
+                            dom = dom + '</ul>';
+                        }
+
+                        self.after( dom );
+                      });
+                }
+            });
+            
+            $('.pagination a').click()
+        })
+    </script>
 {% endblock %}

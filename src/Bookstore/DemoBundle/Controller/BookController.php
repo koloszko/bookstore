@@ -17,7 +17,7 @@ class BookController extends Controller {
 
     private $booksPerPage = 10;
     private $pagesStepsAvailable = 3;
-    private $actionType;
+    private $formType;
 
     /**
      * @Route("/books/add", name="bookstore_demo_book_add" )
@@ -25,7 +25,7 @@ class BookController extends Controller {
      */
     public function addAction(Request $request) {
         $book = new Book();
-        $this->actionType = self::ADD;
+        $this->formType = self::ADD;
         return $this->handleFormProcessing($request, $book);
     }
 
@@ -34,16 +34,16 @@ class BookController extends Controller {
      * @Template
      */
     public function editAction(Request $request, $id) {
-        $book = $this->getRepository()->find($id);
+        $book = $this->getRepository("BookstoreDemoBundle:Book")->find($id);
         if (!$book) {
             throw $this->createNotFoundException('Nie znaleziono książki');
         }
-        $this->actionType = self::EDIT;
+        $this->formType = self::EDIT;
         return $this->handleFormProcessing($request, $book);
     }
 
     private function handleFormProcessing(Request $request, Book $book) {
-        $form = $this->buildForm($book, $this->actionType === self::ADD ? true : false);
+        $form = $this->buildForm($book);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -60,8 +60,8 @@ class BookController extends Controller {
         );
     }
 
-    private function buildForm(Book $book, $addForm = false) {
-        if ($addForm) {
+    private function buildForm(Book $book) {
+        if ($this->formType === self::ADD) {
             $actionUrl = $this->generateUrl('bookstore_demo_book_add');
         } else {
             $actionUrl = $this->generateUrl('bookstore_demo_book_edit', array('id' => $book->getId()));
@@ -77,31 +77,56 @@ class BookController extends Controller {
      * @Method({"GET"})
      * @Template
      */
-    public function listAction($page) {
-        $repository = $this->getRepository();
-        $booksCount = $repository->booksCount();
-
+    public function listAction(Request $request, $page) {
         if ($page == 0) {
             $page = 1;
         }
+
+        $searchForm = $this->buildSearchForm();
+        $searchForm->handleRequest($request);
+        $criteria = array();
+        if ($searchForm->isValid()) {
+            $criteria = $searchForm->getData();
+        }
+
+        $mainCategories = $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+
+        $bookRepository = $this->getRepository("BookstoreDemoBundle:Book");
+        $bookList = $bookRepository->findBooks($criteria, $this->booksPerPage, ($page - 1) * $this->booksPerPage);
+        $booksCount = $bookRepository->booksCount($criteria);
+
         $pagesAmount = round($booksCount / $this->booksPerPage);
         if ($page > $pagesAmount) {
             $page = $pagesAmount;
         }
 
-        $bookList = $repository->findBy(array(), null, $this->booksPerPage, ($page - 1) * $this->booksPerPage);
         return array(
             'books' => $bookList,
+            'categories' => $mainCategories,
+            'searchForm' => $searchForm->createView(),
             'showPaginator' => $booksCount > $this->booksPerPage,
             'page' => $page,
+            'criteria' => $criteria,
             'pagesStepsAvailable' => $this->pagesStepsAvailable,
             'perPage' => $this->booksPerPage,
             'pagesAmount' => $pagesAmount
         );
     }
 
-    private function getRepository() {
-        return $this->getDoctrine()->getManager()->getRepository("BookstoreDemoBundle:Book");
+    private function getRepository($entityName) {
+        return $this->getDoctrine()->getManager()->getRepository($entityName);
+    }
+
+    private function buildSearchForm() {
+        return $this->get('form.factory')->createNamedBuilder(null, 'form', array(), array(
+                            'csrf_protection' => false,
+                        ))
+                        ->setAction($this->generateUrl('bookstore_demo_book_list'))
+                        ->setMethod('GET')
+                        ->add('priceFrom', 'text', array('label' => "Cena od", 'required' => false))
+                        ->add('priceTo', 'text', array('label' => "Cena do", 'required' => false))
+                        ->add('filter', 'submit', array('label' => "Filtruj"))
+                        ->getForm();
     }
 
 }
