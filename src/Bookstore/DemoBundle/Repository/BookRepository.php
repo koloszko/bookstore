@@ -29,9 +29,9 @@ class BookRepository extends EntityRepository {
             $qb->andWhere('b.price <= :priceTo')
                     ->setParameter('priceTo', $criteria['priceTo']);
         }
-        if (isset($criteria['categoryId'])) {
-            $qb->join('b.categoriesWithPriority', 'cp', 'WITH', 'cp.category = :categoryId')
-                    ->setParameter('categoryId', $criteria['categoryId']);
+        if (isset($criteria['categories'])) {
+            $qb->join('b.categoriesWithPriority', 'cp', 'WITH', 'cp.category in (:categories)')
+                    ->setParameter('categories', $criteria['categories']);
         }
         return $qb;
     }

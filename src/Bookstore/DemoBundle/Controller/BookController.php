@@ -10,7 +10,7 @@ use Bookstore\DemoBundle\Controller\CRUDController;
 use Bookstore\DemoBundle\Entity\Book;
 use Bookstore\DemoBundle\Form\BookType;
 
-class BookController extends CRUDController {    
+class BookController extends CRUDController {
 
     private $booksPerPage = 10;
     private $pagesStepsAvailable = 3;
@@ -67,9 +67,13 @@ class BookController extends CRUDController {
         $criteria = array();
         if ($searchForm->isValid()) {
             $criteria = $searchForm->getData();
+            $this->prepareCategoriesCriteria($criteria);
         }
 
-        $mainCategories = $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+        $mainCategories = array();
+        if (!$request->isXmlHttpRequest()) {
+            $mainCategories = $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+        }
 
         $bookRepository = $this->getRepository("BookstoreDemoBundle:Book");
         $bookList = $bookRepository->findBooks($criteria, $this->booksPerPage, ($page - 1) * $this->booksPerPage);
@@ -114,6 +118,19 @@ class BookController extends CRUDController {
                         ->add('categoryId', 'hidden', array('required' => false))
                         ->add('filter', 'submit', array('label' => "Filtruj"))
                         ->getForm();
+    }
+
+    private function prepareCategoriesCriteria(&$criteria) {
+        if (isset($criteria['categoryId'])) {
+            $categoryRepository = $this->getRepository("BookstoreDemoBundle:Category");
+            $category = $categoryRepository->find($criteria['categoryId']);
+            unset($criteria['categoryId']);
+            if ($category) {
+                $categories = $categoryRepository->children($category);
+                $categories[] = $category;
+                $criteria['categories'] = $categories;
+            }
+        }
     }
 
 }
