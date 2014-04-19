@@ -2,22 +2,20 @@
 
 namespace Bookstore\DemoBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
+use Bookstore\DemoBundle\Controller\CRUDController;
 use Bookstore\DemoBundle\Entity\Book;
 use Bookstore\DemoBundle\Form\BookType;
 
-class BookController extends Controller {
-
-    const EDIT = 1;
-    const ADD = 0;
+class BookController extends CRUDController {    
 
     private $booksPerPage = 10;
     private $pagesStepsAvailable = 3;
     private $formType;
+    protected $redirectUrl = 'bookstore_demo_book_list';
 
     /**
      * @Route("/books/add", name="bookstore_demo_book_add" )
@@ -42,25 +40,7 @@ class BookController extends Controller {
         return $this->handleFormProcessing($request, $book);
     }
 
-    private function handleFormProcessing(Request $request, Book $book) {
-        $form = $this->buildForm($book);
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($book);
-            $em->flush();
-
-            return $this->redirect($this->generateUrl('bookstore_demo_book_list'));
-        }
-
-        return array(
-            'entity' => $book,
-            'form' => $form->createView()
-        );
-    }
-
-    private function buildForm(Book $book) {
+    protected function buildForm($book) {
         if ($this->formType === self::ADD) {
             $actionUrl = $this->generateUrl('bookstore_demo_book_add');
         } else {
@@ -73,7 +53,7 @@ class BookController extends Controller {
     }
 
     /**
-     * @Route("/books/{page}", defaults={"page" = 1}, name="bookstore_demo_book_list" )
+     * @Route("/books/{page}", defaults={"page" = 1}, name="bookstore_demo_book_list" , options={"expose"=true})
      * @Method({"GET"})
      * @Template
      */
@@ -100,7 +80,7 @@ class BookController extends Controller {
             $page = $pagesAmount;
         }
 
-        return array(
+        $renderArray = array(
             'books' => $bookList,
             'categories' => $mainCategories,
             'searchForm' => $searchForm->createView(),
@@ -111,6 +91,12 @@ class BookController extends Controller {
             'perPage' => $this->booksPerPage,
             'pagesAmount' => $pagesAmount
         );
+        if ($request->isXmlHttpRequest()) {
+            return $this->render(
+                            'BookstoreDemoBundle:Book:table_with_filter.html.twig', $renderArray
+            );
+        }
+        return $renderArray;
     }
 
     private function getRepository($entityName) {
@@ -125,6 +111,7 @@ class BookController extends Controller {
                         ->setMethod('GET')
                         ->add('priceFrom', 'text', array('label' => "Cena od", 'required' => false))
                         ->add('priceTo', 'text', array('label' => "Cena do", 'required' => false))
+                        ->add('categoryId', 'hidden', array('required' => false))
                         ->add('filter', 'submit', array('label' => "Filtruj"))
                         ->getForm();
     }

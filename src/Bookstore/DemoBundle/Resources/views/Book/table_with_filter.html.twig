@@ -1,0 +1,56 @@
+
+   {{ form(searchForm) }}
+    <table class="reference" style="width:60%">
+        <thead>
+            <tr>
+                <th>Tytuł</th>
+                <th>Autor</th>		
+                <th>Cena</th>
+                <th></th>
+            </tr>
+        </thead>        
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>		
+                    <td>{{book.price|number_format}}</td>
+                    <td><a href="{{ path("bookstore_demo_book_edit", {'id' : book.id}) }}">Edytuj</a></td>
+                </tr>
+            {% else %}  
+                <tr>
+                    <td colspan="4">Nie znaleziono rekordów</td>
+                </tr>
+            {% endfor %}            
+        </tbody>
+    </table>
+    
+    {% if showPaginator %}
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ path("bookstore_demo_book_list", criteria) }}"><<<</a>
+                
+                {% set prev = page - 1 %}
+                {% if prev == 1 %}
+                    <a href="{{ path("bookstore_demo_book_list", criteria) }}"><</a>
+                {% else %}
+                    <a href="{{ path("bookstore_demo_book_list", {'page' : prev}|merge(criteria)) }}"><</a>
+                {% endif %}
+            {% endif %}
+            {% for pageTmp in max(1, page - pagesStepsAvailable)..min(pagesAmount, page + pagesStepsAvailable) %}
+                {% if pageTmp == page %}
+                    {{ page }}
+                {% else %}
+                    {% if pageTmp == 1 %}
+                        <a href="{{ path("bookstore_demo_book_list", criteria) }}">{{ pageTmp }}</a>
+                    {% else %}
+                        <a href="{{ path("bookstore_demo_book_list", {'page' : pageTmp}|merge(criteria)) }}">{{ pageTmp }}</a>
+                    {% endif %}
+               {% endif %}
+            {% endfor %}
+            {% if pagesAmount > page %}
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : page + 1}|merge(criteria)) }}">></a>
+                <a href="{{ path("bookstore_demo_book_list", { 'page' : pagesAmount}|merge(criteria)) }}">>>></a>
+            {% endif %}
+        </div>
+    {% endif %}

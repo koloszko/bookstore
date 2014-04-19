@@ -40,8 +40,11 @@ class Book
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-
-
+    
+    /**
+     * @ORM\OneToMany(targetEntity="BookHasCategory", mappedBy="book")
+     **/
+    private $categoriesWithPriority;
 
     /**
      * Set title
@@ -120,5 +123,45 @@ class Book
     public function getId()
     {
         return $this->id;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->categoriesWithPriority = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add categoriesWithPriority
+     *
+     * @param \Bookstore\DemoBundle\Entity\BookHasCategory $categoriesWithPriority
+     * @return Book
+     */
+    public function addCategoriesWithPriority(\Bookstore\DemoBundle\Entity\BookHasCategory $categoriesWithPriority)
+    {
+        $this->categoriesWithPriority[] = $categoriesWithPriority;
+
+        return $this;
+    }
+
+    /**
+     * Remove categoriesWithPriority
+     *
+     * @param \Bookstore\DemoBundle\Entity\BookHasCategory $categoriesWithPriority
+     */
+    public function removeCategoriesWithPriority(\Bookstore\DemoBundle\Entity\BookHasCategory $categoriesWithPriority)
+    {
+        $this->categoriesWithPriority->removeElement($categoriesWithPriority);
+    }
+
+    /**
+     * Get categoriesWithPriority
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCategoriesWithPriority()
+    {
+        return $this->categoriesWithPriority;
     }
 }

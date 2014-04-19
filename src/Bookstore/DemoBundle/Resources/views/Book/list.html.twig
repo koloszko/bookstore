@@ -1,106 +1,80 @@
 {% extends '::base.html.twig' %}
 
 {% block left %}
-<div class="categories">
     <p>Kategorie</p>
+    <div class="categories">
     <ul>
         {% for category in categories %}
-            <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }}>{{ category.name }}</a></li>
+            <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }} catg-id={{ category.id }}>{{ category.name }}</a></li>
         {% endfor %}
-    </ul>
-</div>
+            </ul>
+        </div>
 {% endblock left %}
 
 {% block body %}
-    <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div> 
-    
-    {{ form(searchForm) }}
-    <table class="reference" style="width:60%">
-        <thead>
-            <tr>
-                <th>Tytuł</th>
-                <th>Autor</th>		
-                <th>Cena</th>
-                <th></th>
-            </tr>
-        </thead>        
-        <tbody>
-            {% for book in books %}
-                <tr>
-                    <td>{{book.title}}</td>
-                    <td>{{book.author}}</td>		
-                    <td>{{book.price|number_format}}</td>
-                    <td><a href="{{ path("bookstore_demo_book_edit", {'id' : book.id}) }}">Edytuj</a></td>
-                </tr>
-            {% else %}  
-                <tr>
-                    <td colspan="4">Nie znaleziono rekordów</td>
-                </tr>
-            {% endfor %}            
-        </tbody>
-    </table>
-    
-    {% if showPaginator %}
-        <div class="pagination">
-            {% if page > 1 %}
-                <a href="{{ path("bookstore_demo_book_list", criteria) }}"><<<</a>
-                
-                {% set prev = page - 1 %}
-                {% if prev == 1 %}
-                    <a href="{{ path("bookstore_demo_book_list", criteria) }}"><</a>
-                {% else %}
-                    <a href="{{ path("bookstore_demo_book_list", {'page' : prev}|merge(criteria)) }}"><</a>
-                {% endif %}
-            {% endif %}
-            {% for pageTmp in max(1, page - pagesStepsAvailable)..min(pagesAmount, page + pagesStepsAvailable) %}
-                {% if pageTmp == page %}
-                    {{ page }}
-                {% else %}
-                    {% if pageTmp == 1 %}
-                        <a href="{{ path("bookstore_demo_book_list", criteria) }}">{{ pageTmp }}</a>
-                    {% else %}
-                        <a href="{{ path("bookstore_demo_book_list", {'page' : pageTmp}|merge(criteria)) }}">{{ pageTmp }}</a>
-                    {% endif %}
-               {% endif %}
-            {% endfor %}
-            {% if pagesAmount > page %}
-                <a href="{{ path("bookstore_demo_book_list", { 'page' : page + 1}|merge(criteria)) }}">></a>
-                <a href="{{ path("bookstore_demo_book_list", { 'page' : pagesAmount}|merge(criteria)) }}">>>></a>
-            {% endif %}
-        </div>
-    {% endif %}
+        <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div>
+        <div><a href="{{ path("bookstore_demo_category_add") }}">Dodaj nową kategorię</a></div>
+        <div id='tbl'>
+        {% include 'BookstoreDemoBundle:Book:table_with_filter.html.twig' %}    
+            </div>        
 {% endblock %}
 
 {% block bottom_javascripts %}
     {{ parent() }}
-    
-    <script type="text/javascript">
-        $(function() {
-            $('.categories').on('click', '.cat a', function(event) {
-                event.preventDefault();
-                var self = $(this),
-                    liElem = self.parent('li');
-                if (liElem.hasClass('unfold')) {
-                    liElem.removeClass('unfold');
-                    liElem.find('ul').remove();
-                } else {
-                    liElem.addClass('unfold');
-                    $.get(self.attr('href'), function( data ) {
-                        var lnth = data.length;
-                        if (lnth) {
-                            var dom = '<ul>';
-                            for (var i=0; i < lnth; i++) {
-                               dom = dom + "<li class='cat'><a href='" + Routing.generate('bookstore_demo_categories', {parentId: data[i].id }) + "'>" + data[i].name + "</a></li>"
-                            }
-                            dom = dom + '</ul>';
+
+            <script type="text/javascript">
+                $(function() {
+                    var blockUiMsg = '<h3>Ładowanie...</h3>';
+                    function sumbitForm() {
+                        $.get(Routing.generate('bookstore_demo_book_list') + '?' + $('form').serialize(), function(data) {
+                            $('#tbl').html(data);
+                            $.unblockUI();
+                        });
+                    }
+
+                    $('.categories').on('click', '.cat a', function(event) {
+                        $.blockUI({message: blockUiMsg});
+                        event.preventDefault();
+                        var self = $(this),
+                                liElem = self.parent('li');
+                        if (liElem.hasClass('unfold')) {
+                            liElem.removeClass('unfold');
+                            liElem.find('ul').remove();
+                        } else {
+                            liElem.addClass('unfold');
+                            $.get(self.attr('href'), function(data) {
+                                var lnth = data.length;
+                                if (lnth) {
+                                    var dom = '<ul>';
+                                    for (var i = 0; i < lnth; i++) {
+                                        dom = dom + "<li class='cat'><a href='" + Routing.generate('bookstore_demo_categories', {parentId: data[i].id}) + "' catg-id=" + data[i].id + ">" + data[i].name + "</a></li>"
+                                    }
+                                    dom = dom + '</ul>';
+                                }
+
+                                self.after(dom);
+                            });
                         }
 
-                        self.after( dom );
-                      });
-                }
-            });
-            
-            $('.pagination a').click()
-        })
-    </script>
+                        $('form #categoryId').val(self.attr('catg-id'));
+                        sumbitForm();
+                    });
+
+                    $("#tbl").on("submit", 'form', function(event) {
+                        event.preventDefault();
+                        $.blockUI({message: blockUiMsg});
+                        sumbitForm();
+                    });
+
+                    $("#tbl").on("click", '.pagination a', function(event) {
+                        event.preventDefault();
+                        $.blockUI({message: blockUiMsg});
+                        $.get($(this).attr('href'), function(data) {
+                            $('#tbl').html(data);
+                            $.unblockUI();
+                        });
+                    });
+
+                })
+                </script>
 {% endblock %}

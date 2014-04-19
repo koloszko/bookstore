@@ -8,3 +8,8 @@ Bookstore\DemoBundle\Entity\Book:
             - NotBlank: ~        
             - Type:
                 type: double
+                
+Bookstore\DemoBundle\Entity\Category:
+    properties:
+        name:
+            - NotBlank: ~
