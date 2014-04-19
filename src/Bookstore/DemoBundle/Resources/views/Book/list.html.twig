@@ -37,6 +37,9 @@
                         event.preventDefault();
                         var self = $(this),
                                 liElem = self.parent('li');
+                                
+                        $('.cat a').removeClass('clicked');
+                        self.addClass('clicked');
                         if (liElem.hasClass('unfold')) {
                             liElem.removeClass('unfold');
                             liElem.find('ul').remove();

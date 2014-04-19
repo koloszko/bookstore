@@ -46,3 +46,7 @@ table.reference td.example_code
 .pagination a {    
     margin: 0 2px;
 }
+
+.clicked {
+    font-weight: bold;
+}

@@ -103,10 +103,6 @@ class BookController extends CRUDController {
         return $renderArray;
     }
 
-    private function getRepository($entityName) {
-        return $this->getDoctrine()->getManager()->getRepository($entityName);
-    }
-
     private function buildSearchForm() {
         return $this->get('form.factory')->createNamedBuilder(null, 'form', array(), array(
                             'csrf_protection' => false,
@@ -124,7 +120,6 @@ class BookController extends CRUDController {
         if (isset($criteria['categoryId'])) {
             $categoryRepository = $this->getRepository("BookstoreDemoBundle:Category");
             $category = $categoryRepository->find($criteria['categoryId']);
-            unset($criteria['categoryId']);
             if ($category) {
                 $categories = $categoryRepository->children($category);
                 $categories[] = $category;
@@ -132,5 +127,5 @@ class BookController extends CRUDController {
             }
         }
     }
-
+   
 }
