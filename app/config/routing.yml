@@ -1,3 +1,7 @@
+blog_show:
+    path:      /
+    defaults:  { _controller: BookstoreDemoBundle:Book:list, page: 1 }
+    
 bookstore_demo:
     resource: "@BookstoreDemoBundle/Controller/"
     type:     annotation
