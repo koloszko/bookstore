@@ -52,6 +52,14 @@ class BookController extends CRUDController {
         return $form;
     }
 
+    protected function prepareAddEditViewParameters() {
+        return array('categories' => $this->findMainCategories());
+    }
+
+    private function findMainCategories() {
+        return $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+    }
+
     /**
      * @Route("/books/{page}", defaults={"page" = 1}, name="bookstore_demo_book_list" , options={"expose"=true})
      * @Method({"GET"})
@@ -72,7 +80,7 @@ class BookController extends CRUDController {
 
         $mainCategories = array();
         if (!$request->isXmlHttpRequest()) {
-            $mainCategories = $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+            $mainCategories = $this->findMainCategories();
         }
 
         $bookRepository = $this->getRepository("BookstoreDemoBundle:Book");
@@ -127,5 +135,5 @@ class BookController extends CRUDController {
             }
         }
     }
-   
+
 }

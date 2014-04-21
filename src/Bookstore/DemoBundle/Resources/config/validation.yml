@@ -13,3 +13,10 @@ Bookstore\DemoBundle\Entity\Category:
     properties:
         name:
             - NotBlank: ~
+
+Bookstore\DemoBundle\Entity\BookHasCategory:
+    properties:
+        priority:
+            - NotBlank: ~        
+            - Type:
+                type: integer           

@@ -27,7 +27,7 @@ class BookHasCategory
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bookstore\DemoBundle\Entity\Book")
+     * @ORM\ManyToOne(targetEntity="Bookstore\DemoBundle\Entity\Book", inversedBy="categoriesWithPriority")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_books", referencedColumnName="id")
      * })

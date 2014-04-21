@@ -17,6 +17,7 @@ abstract class CRUDController extends Controller {
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            beforeSave($entity);
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -24,19 +25,26 @@ abstract class CRUDController extends Controller {
             return $this->redirect($this->generateUrl($this->redirectUrl));
         }
 
-        return array(
+        return array_merge(array(
             'entity' => $entity,
             'form' => $form->createView()
-        );
+                ), $this->prepareAddEditViewParameters());
     }
 
     protected function getRepository($entityName) {
         return $this->getDoctrine()->getManager()->getRepository($entityName);
     }
 
+    protected function prepareAddEditViewParameters() {
+        return array();
+    }
+
     protected function buildForm($entity) {
         
     }
-
+    
+    protected function beforeSave($entity) {
+        
+    }
 }
 

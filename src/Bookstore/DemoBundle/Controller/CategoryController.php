@@ -12,8 +12,9 @@ use Bookstore\DemoBundle\Form\CategoryType;
 use Doctrine\ORM\Query;
 
 class CategoryController extends CRUDController {
+
     protected $redirectUrl = 'bookstore_demo_book_list';
-    
+
     /**
      * @Route("/categories/add", name="bookstore_demo_category_add" )
      * @Template("BookstoreDemoBundle:Category:edit.html.twig")
@@ -23,7 +24,7 @@ class CategoryController extends CRUDController {
         $this->formType = self::ADD;
         return $this->handleFormProcessing($request, $category);
     }
-    
+
     /**
      * @Route("/categories/edit/{id}", name="bookstore_demo_category_edit" )
      * @Template
@@ -36,7 +37,7 @@ class CategoryController extends CRUDController {
         $this->formType = self::EDIT;
         return $this->handleFormProcessing($request, $category);
     }
-    
+
     protected function buildForm($category) {
         if ($this->formType === self::ADD) {
             $actionUrl = $this->generateUrl('bookstore_demo_category_add');
@@ -48,11 +49,11 @@ class CategoryController extends CRUDController {
         $form->add('submit', 'submit', array('label' => 'Zapisz'));
         return $form;
     }
-    
+
     /**
-     * @Route("/categories/{parentId}", name="bookstore_demo_categories", options={"expose"=true} )
+     * @Route("/categories/{parentId}", defaults={"parentId" = 0}, name="bookstore_demo_categories", options={"expose"=true} )
      */
-    public function subcategoriesAction($parentId) {        
+    public function subcategoriesAction($parentId) {
         $response = new JsonResponse();
         $response->setData($this->findSubcategories($parentId));
         return $response;
@@ -61,9 +62,13 @@ class CategoryController extends CRUDController {
     private function findSubcategories($parentId) {
         $em = $this->getDoctrine()->getManager();
         $qb = $em->getRepository("BookstoreDemoBundle:Category")
-                ->createQueryBuilder('c')
-                ->where('c.parent = :parentId')
-                ->setParameter('parentId', $parentId);
+                ->createQueryBuilder('c');
+        if ($parentId > 0) {
+            $qb->where('c.parent = :parentId')
+                    ->setParameter('parentId', $parentId);
+        } else {
+            $qb->where('c.parent is null');
+        }
         return $qb->getQuery()->getResult(Query::HYDRATE_ARRAY);
     }
 

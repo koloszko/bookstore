@@ -1,5 +1,76 @@
 {% extends '::base.html.twig' %}
 
-{% block body %}
-    {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/bookstoredemo/js/categories.js') }}"></script>
 {% endblock %}
+
+{% block body %}
+    <div class='book-form'>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class='left-clmn'>
+            {{ form_row(form.title) }}
+            {{ form_row(form.author) }}
+            {{ form_row(form.price) }}
+            {{ form_widget(form.submit) }}    
+        </div>
+        <div class='right-clmn'>
+            <h3>Wybierz kategorię</h3>
+            <div class="categories">        
+                <div class="catg-tree">
+                    <ul>
+                    {% for category in categories %}
+                        <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }} catg-id={{ category.id }}>{{ category.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+               </div>            
+            </div>
+            <div id="book-categories-container">
+                <h4>Kategorie przypisane do książki</h4>
+
+                <div id="book-categories" data-prototype="{{ form_widget(form.categoriesWithPriority.vars.prototype)|e }}">
+                {% for category in form.categoriesWithPriority %}                        
+                        {{ form_row(category) }}
+                        <a class='del-category' href>Usuń</a>
+                    </div>
+                {% endfor %}                    
+            </div>
+        </div>        
+                    
+    {{ form_end(form) }}
+    </div>
+{% endblock %}
+    
+{% block bottom_javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(function() {  
+            var categoriesCount = '{{ form.categoriesWithPriority|length }}';
+                         
+            $('.categories').categories({
+                path: 'bookstore_demo_categories',
+                buildBreadcrumb: true,
+                showChooseButton: true,
+                onCategoryChosen: function(selectedCategory) {
+                    var categoriesList = $('#book-categories');
+
+                    var newWidget = categoriesList.attr('data-prototype');                    
+                    newWidget = newWidget.replace(/__name__/g, categoriesCount);
+                    categoriesCount++;                    
+                    
+                    $(newWidget).appendTo($('#book-categories-container'));
+                    $("<a class='del-category' href>Usuń</a>").appendTo($('#book-categories-container'));
+                    $('.category_id').last().val(selectedCategory.id);
+                    $('.category_name').last().val(selectedCategory.name);
+                }
+            });  
+            
+            $('#book-categories-container').on('click', '.del-category', function(e) {
+                e.preventDefault();
+                $(this).prev('div').remove(); 
+                $(this).remove(); 
+            });
+        })
+        </script>
+{% endblock %}    

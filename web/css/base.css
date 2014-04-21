@@ -13,6 +13,17 @@ body {
     width: 69%;
 }
 
+.left-clmn {
+    float: left;
+}
+
+.right-clmn {
+    float: right;
+}
+
+.book-form {
+    width: 500px;
+}
 table.reference,table.tecspec{
     border-collapse:collapse;width:100%;
 }
@@ -49,4 +60,8 @@ table.reference td.example_code
 
 .clicked {
     font-weight: bold;
+}
+
+.brd-separator {
+    margin: 0 5px;
 }

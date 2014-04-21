@@ -4,3 +4,9 @@ services:
          arguments: ["@twig"]
          tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    bookstore.type.category_text:
+        class: Bookstore\DemoBundle\Form\Type\CategoryTextType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type, alias: category_text }

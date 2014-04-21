@@ -42,7 +42,7 @@ class Book
     private $id;
     
     /**
-     * @ORM\OneToMany(targetEntity="BookHasCategory", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="BookHasCategory", mappedBy="book", cascade={"persist"})
      **/
     private $categoriesWithPriority;
 
@@ -140,9 +140,8 @@ class Book
      */
     public function addCategoriesWithPriority(\Bookstore\DemoBundle\Entity\BookHasCategory $categoriesWithPriority)
     {
-        $this->categoriesWithPriority[] = $categoriesWithPriority;
-
-        return $this;
+        $categoriesWithPriority->setBook($this);
+        $this->categoriesWithPriority->add($categoriesWithPriority);
     }
 
     /**
