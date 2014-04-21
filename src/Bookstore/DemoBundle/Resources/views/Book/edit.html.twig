@@ -1,9 +1,5 @@
 {% extends '::form.html.twig' %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('bundles/bookstoredemo/js/jquery.categories.js') }}"></script>
-{% endblock %}
+{% import '::macros.html.twig' as macro %}
 
 {% block body %}
     <a href={{ path('bookstore_demo_book_list') }}>Powrót do listy</a>
@@ -35,16 +31,7 @@
         </div>
         <div class='right-clmn'>
             <h3>Wybierz kategorię</h3>
-            <div class="categories">        
-                <div class="catg-tree">
-                    <ul>
-                    {% for category in categories %}
-                        <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }} catg-id={{ category.id }}>{{ category.name }}</a></li>
-                    {% endfor %}
-                    </ul>
-               </div>            
-            </div>
-            
+            {{ macro.categories_tree(categories)}}                        
         </div>        
                     
     {{ form_end(form) }}

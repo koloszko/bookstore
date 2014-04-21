@@ -1,4 +1,5 @@
 {% extends '::base.html.twig' %}
+{% import '::macros.html.twig' as macro %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -6,20 +7,14 @@
 {% endblock %}
     
 {% block left %}
-    <p>Kategorie</p>
-    <div class="categories">
-    <ul>
-        {% for category in categories %}
-            <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }} catg-id={{ category.id }}>{{ category.name }}</a></li>
-        {% endfor %}
-            </ul>
-        </div>
+    <a href>Wszystkie kategorie</a>    
+    {{ macro.categories_tree(categories)}}
 {% endblock left %}
 
 {% block body %}
         <div><a href="{{ path("bookstore_demo_book_add") }}">Dodaj nową książkę</a></div>
         <div><a href="{{ path("bookstore_demo_category_add") }}">Dodaj nową kategorię</a></div>
         <div id='tbl'>
-        {% include 'BookstoreDemoBundle:Book:table_with_filter.html.twig' %}    
-            </div>        
+            {% include 'BookstoreDemoBundle:Book:table_with_filter.html.twig' %}    
+        </div>        
 {% endblock %}

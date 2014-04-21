@@ -1,0 +1,11 @@
+{% macro categories_tree(categories) %}
+    <div class="categories">        
+        <div class="catg-tree">
+            <ul>
+            {% for category in categories %}
+                <li class='cat'><a href={{ path('bookstore_demo_categories', {'parentId': category.id}) }} catg-id={{ category.id }}>{{ category.name }}</a></li>
+            {% endfor %}
+            </ul>
+       </div>            
+    </div>
+{% endmacro %}

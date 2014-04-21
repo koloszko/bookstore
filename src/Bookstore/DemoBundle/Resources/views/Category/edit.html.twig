@@ -1,5 +1,27 @@
 {% extends '::base.html.twig' %}
+{% import '::macros.html.twig' as macro %}
 
 {% block body %}
-    {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form(form) }}
+    {{ macro.categories_tree(categories)}}
+{% endblock %}
+
+    {% block bottom_javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(function() {                           
+            $('.categories').categories({
+                path: 'bookstore_demo_categories',
+                buildBreadcrumb: true,
+                showChooseButton: true,
+                onCategoryChosen: function(selectedCategory) {
+                    if (selectedCategory.id) {                        
+                        $('#bookstore_category_type_parent').val(selectedCategory.id);
+                        $('.category_name').val(selectedCategory.name);
+                    }
+                }
+            });             
+        });
+        </script>
 {% endblock %}

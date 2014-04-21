@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Bookstore\DemoBundle\Controller\CRUDController;
 use Bookstore\DemoBundle\Entity\Category;
 use Bookstore\DemoBundle\Form\CategoryType;
-use Doctrine\ORM\Query;
 
 class CategoryController extends CRUDController {
 
@@ -49,27 +48,23 @@ class CategoryController extends CRUDController {
         $form->add('submit', 'submit', array('label' => 'Zapisz'));
         return $form;
     }
+    
+    protected function prepareAddEditViewParameters() {
+        return array('categories' => $this->findMainCategories());
+    }
 
+    private function findMainCategories() {
+        return $this->getRepository("BookstoreDemoBundle:Category")->findByParent(NULL);
+    }
+    
     /**
      * @Route("/categories/{parentId}", defaults={"parentId" = 0}, name="bookstore_demo_categories", options={"expose"=true} )
      */
     public function subcategoriesAction($parentId) {
         $response = new JsonResponse();
-        $response->setData($this->findSubcategories($parentId));
+        $response->setData($this->getRepository("BookstoreDemoBundle:Category")
+                        ->findSubcategories($parentId));
         return $response;
-    }
-
-    private function findSubcategories($parentId) {
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->getRepository("BookstoreDemoBundle:Category")
-                ->createQueryBuilder('c');
-        if ($parentId > 0) {
-            $qb->where('c.parent = :parentId')
-                    ->setParameter('parentId', $parentId);
-        } else {
-            $qb->where('c.parent is null');
-        }
-        return $qb->getQuery()->getResult(Query::HYDRATE_ARRAY);
     }
 
 }
