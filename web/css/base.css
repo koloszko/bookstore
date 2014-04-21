@@ -22,7 +22,7 @@ body {
 }
 
 .book-form {
-    width: 500px;
+    width: 600px;
 }
 table.reference,table.tecspec{
     border-collapse:collapse;width:100%;
@@ -64,4 +64,31 @@ table.reference td.example_code
 
 .brd-separator {
     margin: 0 5px;
+}
+div.input{
+    display:inline-block;
+    text-align: left;
+}
+
+div.label{
+    display:inline-block;
+    text-align: right;
+}
+
+
+.errors{
+    margin:8px 0 0 0;
+    color:red;
+    text-align: center;
+}
+
+.errors ul li{
+    display:block;
+    text-align:center
+}
+
+.book-ctg {
+    border: 1px solid blue;
+    padding: 10px;
+    margin: 5px;
 }

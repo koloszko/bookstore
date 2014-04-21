@@ -8,6 +8,14 @@ Bookstore\DemoBundle\Entity\Book:
             - NotBlank: ~        
             - Type:
                 type: double
+        categoriesWithPriority:
+            - All:
+                - Bookstore\DemoBundle\Validator\Constraints\UniqueInCollection:
+                    propertyPath: priority
+                    message: "Priorytety kategorii przypisanych do książki muszą być być unikalne"
+                - Bookstore\DemoBundle\Validator\Constraints\UniqueInCollection:
+                    propertyPath: category.id
+                    message: "Kategorie przypisane do książki nie mogą się powtarzać"    
                 
 Bookstore\DemoBundle\Entity\Category:
     properties:

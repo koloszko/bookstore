@@ -28,7 +28,7 @@ class CategoryTextType extends AbstractType {
     }
 
     public function getParent() {
-        return 'text';
+        return 'hidden';
     }
 
     public function getName() {

@@ -17,7 +17,7 @@ abstract class CRUDController extends Controller {
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            beforeSave($entity);
+            $this->beforeSave($entity);
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();

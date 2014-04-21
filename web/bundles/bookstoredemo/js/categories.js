@@ -48,11 +48,11 @@
             self.addClass('clicked');
 
             $.get(self.attr('href'), function(data) {
-                var catgTree;
+                var catgTree = '';
                 if (data.length) {
-                    catgTree = buildCategoryTree(data);
-                    $('.catg-breadcrumbs a').last().after("<span class='brd-separator'>></span>" + buildCategoryUrl(self.attr('catg-id'), self.text()));
+                    catgTree = buildCategoryTree(data);                    
                 }
+                $('.catg-breadcrumbs a').last().after("<span class='brd-separator'>></span>" + buildCategoryUrl(self.attr('catg-id'), self.text()));
                 $('.catg-tree').html(catgTree);
             });
         });

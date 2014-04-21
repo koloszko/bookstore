@@ -32,11 +32,17 @@ class BookController extends CRUDController {
      * @Template
      */
     public function editAction(Request $request, $id) {
+        $this->formType = self::EDIT;
+        
         $book = $this->getRepository("BookstoreDemoBundle:Book")->find($id);
         if (!$book) {
             throw $this->createNotFoundException('Nie znaleziono książki');
+        }        
+
+        $this->originalCategories = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($book->getCategoriesWithPriority() as $category) {
+            $this->originalCategories->add($category);
         }
-        $this->formType = self::EDIT;
         return $this->handleFormProcessing($request, $book);
     }
 
@@ -52,6 +58,17 @@ class BookController extends CRUDController {
         return $form;
     }
 
+    protected function beforeSave($entity) {
+        if ($this->formType === self::EDIT) {
+            $em = $this->getDoctrine()->getManager();
+            foreach ($this->originalCategories as $category) {
+            if (false === $entity->getCategoriesWithPriority()->contains($category)) {
+                $em->remove($category);
+            }
+        }
+        }
+    }
+    
     protected function prepareAddEditViewParameters() {
         return array('categories' => $this->findMainCategories());
     }
